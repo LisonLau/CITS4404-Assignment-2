@@ -63,3 +63,9 @@ def bot(P):
 
 data = getOHLCVdata()
 print(setIndicators(data))
+
+exchange = ccxt.kraken()
+
+order_book = exchange.fetch_order_book('BTC/AUD')
+
+print(order_book) 
