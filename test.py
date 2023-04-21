@@ -22,6 +22,19 @@ def setIndicators(data):
     data['macd']    = ta.trend.MACD(data['close']).macd()
     return data
 
+# Determines whether or not the bot will buy at this timestep
+def buy_trigger(t, P):
+    #TODO fill this
+    should_buy = False
+    return should_buy
+
+def sell_trigger(t, P):
+    #TODO fill this
+    should_sell = False
+
+    return should_sell
+
+
 # Define the bot function
 def bot(P):
     data = getOHLCVdata()
