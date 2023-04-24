@@ -31,7 +31,7 @@ def setIndicators(data):
 # Determines whether or not the bot will buy at this timestep
 def buy_trigger(t):
     should_buy = False
-    if data['macd'][t] > data['macd_signal'][t] and data['macd'][t-1] <= data['signal'][t-1]:
+    if data['macd'][t] > data['macd_signal'][t] and data['macd'][t-1] <= data['macd_signal'][t-1]:
         should_buy = True
     return should_buy
 
@@ -39,7 +39,7 @@ def buy_trigger(t):
 def sell_trigger(t):
     should_sell = False
 
-    if data['macd'][t] < data['macd_signal'][t] and data['macd'][t-1] >= data['signal'][t-1]:
+    if data['macd'][t] < data['macd_signal'][t] and data['macd'][t-1] >= data['macd_signal'][t-1]:
         should_sell = True
 
     return should_sell
@@ -59,21 +59,24 @@ def bot():
 
     for t in range(len(data)):
         if buy_trigger(t) and not buy_triggered:
+            print("Buying on {}".format(data['timestamp'][t]))
             buy_triggered = True
             AUD_buy = AUD * 0.98
-            BTC = AUD_buy / data['close']
+            BTC = AUD_buy / data['close'][t]
             AUD = 0.0
             print("Current holdings: {} BTC".format(BTC))
         elif sell_trigger(t) and buy_triggered:
+            print("Selling on {}".format(data['timestamp'][t]))
             buy_triggered = False
             BTC_sell = BTC * 0.98
-            AUD = BTC_sell * data['close']
+            AUD = BTC_sell * data['close'][t]
             BTC = 0.0
             print("Current holdings: ${} AUD".format(AUD))
-        elif t == len(data)-1 and BTC > 0:
+        elif t == len(data)-1 and BTC > 0.0:
             BTC_sell = BTC * 0.98
-            AUD = BTC_sell * data['close']
+            AUD = BTC_sell * data['close'][t]
             BTC = 0.0
+            print("Total earnings: ${} AUD".format(AUD))
 
     return AUD
 
@@ -81,5 +84,3 @@ def bot():
 data = getOHLCVdata()
 indicator_data = setIndicators(data)
 total_earn = bot()
-
-print("Total earnings: {}".format(total_earn))
