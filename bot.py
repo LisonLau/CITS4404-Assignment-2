@@ -11,8 +11,8 @@ PARAMETER_RANGES = {
 }
 
 # Define genetic algorithm parameters
-POPULATION_SIZE = 3
-NUM_GENERATIONS = 3
+POPULATION_SIZE = 10
+NUM_GENERATIONS = 50
 MUTATION_RATE   = 0.1
 CROSSOVER_RATE  = 0.8
 
@@ -37,6 +37,7 @@ def sell_trigger(t, P, data):
     return sell(t, P, data) and not sell(t-1, P, data) and not (buy(t, P, data) and not buy(t-1, P, data))
 
 # Define the buy function using MACD indicator
+# TODO: this is definitely not correct :D
 def buy(t, P, data):
     # Define MACD parameters from P
     w_slow = int(P[0])
@@ -60,6 +61,7 @@ def buy(t, P, data):
     return (macd_line > signal_line) and (prev_macd <= prev_signal)
 
 # Define the sell function using MACD indicator
+# TODO: this is definitely not correct :D
 def sell(t, P, data):
     # Define MACD parameters from P
     w_slow = int(P[0])
