@@ -46,7 +46,7 @@ def buy_trigger(t, P, data):
     prev_signal    = macd_indicator.macd_signal().loc[t-1]
     # prev_signal <= prev_macd
     # Trigger buy signal if MACD line is above signal line and both are positive
-    return (macd_line > signal_line)
+    return ((macd_line > signal_line) and (prev_macd < prev_signal))
 
 # Define the sell trigger function using MACD indicator
 def sell_trigger(t, P, data):
@@ -66,7 +66,7 @@ def sell_trigger(t, P, data):
     prev_signal    = macd_indicator.macd_signal().loc[t-1]
     # prev_signal >= prev_macd
     # Trigger sell signal if MACD line is above signal line
-    return (macd_line < signal_line)
+    return ((macd_line < signal_line) and (prev_macd > prev_signal))
 
 # Define the trading bot function
 # P format = (window_slow, window_fast, window_sign)
