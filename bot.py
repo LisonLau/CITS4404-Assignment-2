@@ -23,59 +23,37 @@ def getOHLCVdata():
     data['timestamp'] = pd.to_datetime(data['timestamp'], unit='ms')
     return data
 
-"""def setIndicators(data):
-    # Calculate some TA indicators using the ta library
-    #data['sma20']   = ta.trend.sma_indicator(data['close'], window=20)
-    #data['sma50']   = ta.trend.sma_indicator(data['close'], window=50)
-    data['rsi']     = ta.momentum.RSIIndicator(data['close']).rsi()
-    data['macd']    = ta.trend.MACD(data['close'], START_WINDOW_SLOW, START_WINDOW_FAST, START_WINDOW_SIGN, fillna=True).macd()
-    data['macd_signal'] = ta.trend.MACD(data['close'], START_WINDOW_SLOW, START_WINDOW_FAST, START_WINDOW_SIGN, fillna=True).macd_signal()
-    data['macd_histogram'] = ta.trend.MACD(data['close'], START_WINDOW_SLOW, START_WINDOW_FAST, START_WINDOW_SIGN, fillna=True).macd_diff()
-
-    return data
-"""
-
-# Determines whether or not the bot will buy at this timestep
-def buy_trigger(t, P, data):
-    should_buy = False
+def trigger(t, P, data, buy_triggered):
+    buyStr = 'BUY'
+    sellStr = 'SELL'
 
     window_slow = P[0]
     window_fast = P[1]
     window_sign = P[2] 
-    rsi_window = P[3]
-
-    # Get close prices of past few timestamps for MACD calculation
-    prices = data['close'][:t]
+    
+    prices = data.loc[:t, 'close']
 
     macd_ind = ta.trend.MACD(close=prices, window_slow=window_slow,
-                         window_fast = window_fast, window_sign=window_sign)
+                         window_fast = window_fast, window_sign=window_sign, fillna=True)
     macd = macd_ind.macd().loc[t]
-    macd_signal = macd_ind.signal().loc[t]
-    prev_macd = macd_ind.macd().loc[t-1]
-    prev_signal = macd_ind.signal().loc[t-1]
+    macd_signal = macd_ind.macd_signal().loc[t]
 
-    rsi_ind = ta.trend.RSI(close=prices, window=rsi_window)
-    rsi_current = rsi_ind.loc[t]
+    if t-1 > 0:
+        prev_macd = macd_ind.macd().loc[t-1]
+        prev_signal = macd_ind.macd_signal().loc[t-1]
+    else:
+        prev_macd = macd_ind.macd().loc[0]
+        prev_signal = macd_ind.macd_signal().loc[0]
+
+    if (macd < macd_signal and prev_macd >= prev_signal) and buy_triggered is True:
+        return sellStr
     
-    if (macd > macd_signal and prev_macd > prev_signal) or rsi_current <= RSI_OVERSOLD:
-        should_buy = True
-
-    return should_buy
-
-# Determines whether or not the bot will sell at this timestep
-def sell_trigger(t):
-    should_sell = False
-
-    if data['macd'][t] < data['macd_signal'][t] and data['macd'][t-1] >= data['macd_signal'][t-1]:
-        should_sell = True
-
-    return should_sell
+    elif (macd > macd_signal and prev_macd <= prev_signal) and buy_triggered is False:
+        return buyStr
 
 
-# Define the bot function
-#def bot(P):
-
-def trade_bot():
+# Define bot function
+def trade_bot(P):
     data = getOHLCVdata()
 
     # Initialise holdings
@@ -84,14 +62,14 @@ def trade_bot():
     buy_triggered = False
 
     for t in range(len(data)):
-        if buy_trigger(t) and not buy_triggered:
+        if trigger(t, P, data, buy_triggered) == "BUY":
             print("Buying on {}".format(data['timestamp'][t]))
             buy_triggered = True
             AUD_buy = AUD * 0.98
             BTC = AUD_buy / data['close'][t]
             AUD = 0.0
             print("Current holdings: {} BTC".format(BTC))
-        elif sell_trigger(t) and buy_triggered:
+        elif trigger(t, P, data, buy_triggered) == "SELL":
             print("Selling on {}".format(data['timestamp'][t]))
             buy_triggered = False
             BTC_sell = BTC * 0.98
@@ -106,6 +84,6 @@ def trade_bot():
 
     return AUD
 
-
+P = [26, 12, 9, 14]
 data = getOHLCVdata()
-total_earn = trade_bot()
+total_earn = trade_bot(P)
