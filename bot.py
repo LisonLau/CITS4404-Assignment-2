@@ -11,8 +11,8 @@ PARAMETER_RANGES = {
 }
 
 # Define genetic algorithm parameters
-POPULATION_SIZE = 20
-NUM_GENERATIONS = 10
+POPULATION_SIZE = 2
+NUM_GENERATIONS = 1
 MUTATION_RATE   = 0.1
 CROSSOVER_RATE  = 0.8
 
@@ -42,11 +42,10 @@ def buy_trigger(t, P, data):
     macd_indicator = ta.trend.MACD(close=prices, window_slow=w_slow, window_fast=w_fast, window_sign=w_sign)
     macd_line      = macd_indicator.macd().loc[t]
     signal_line    = macd_indicator.macd_signal().loc[t]
-    prev_macd      = macd_indicator.macd().loc[t-1] 
-    prev_signal    = macd_indicator.macd_signal().loc[t-1]
-    # prev_signal <= prev_macd
-    # Trigger buy signal if MACD line is above signal line and both are positive
-    return ((macd_line > signal_line) and (prev_macd < prev_signal))
+    # prev_macd      = macd_indicator.macd().iloc[t-1] 
+    # prev_signal    = macd_indicator.macd_signal().iloc[t-1]
+    # Trigger buy signal if MACD line is above signal line
+    return (macd_line > signal_line) #and (prev_macd < prev_signal))
 
 # Define the sell trigger function using MACD indicator
 def sell_trigger(t, P, data):
@@ -62,11 +61,10 @@ def sell_trigger(t, P, data):
     macd_indicator = ta.trend.MACD(close=prices, window_slow=w_slow, window_fast=w_fast, window_sign=w_sign)
     macd_line      = macd_indicator.macd().loc[t]
     signal_line    = macd_indicator.macd_signal().loc[t]
-    prev_macd      = macd_indicator.macd().loc[t-1] 
-    prev_signal    = macd_indicator.macd_signal().loc[t-1]
-    # prev_signal >= prev_macd
-    # Trigger sell signal if MACD line is above signal line
-    return ((macd_line < signal_line) and (prev_macd > prev_signal))
+    # prev_macd      = macd_indicator.macd().loc[t-1] 
+    # prev_signal    = macd_indicator.macd_signal().loc[t-1]
+    # Trigger sell signal if MACD line is below signal line
+    return (macd_line < signal_line) #and (prev_macd > prev_signal))
 
 # Define the trading bot function
 # P format = (window_slow, window_fast, window_sign)
@@ -125,19 +123,25 @@ def genetic_algorithm():
     # Generate an initial population of bots with different parameters
     population = []
     for n in range(POPULATION_SIZE):
-        P = ()
-        bot = trading_bot(P, data)
-        population.append(bot) 
+        # Gets random parameters within the ranges specified
+        w_slow = random.choice(PARAMETER_RANGES['window_slow'])
+        w_fast = random.choice(PARAMETER_RANGES['window_fast'])
+        w_sign = random.choice(PARAMETER_RANGES['window_sign'])
+        P = (w_slow, w_fast, w_sign)
+        bot = trading_bot(P, data)  # Returns finalAUD
+        botInstance = (bot, P)      # (finalAUD, (w_slow, w_fast, w_sign))
+        population.append(botInstance) 
         
     # Run the genetic algorithm
     for g in range(NUM_GENERATIONS):
         # Evaluate the fitness of each bot in the population
-        fitness_scores = [evaluate_fitness(bot) for bot in population]
-        
+        fitness_scores = [evaluate_fitness(bot(0)) for bot in population]
+        print(fitness_scores)
         # Select the top performing bots
         elite_indices = sorted(range(len(fitness_scores)), key=lambda i: fitness_scores[i], reverse=True)[:POPULATION_SIZE // 2]
+        print(elite_indices)
         elite_bots = [population[i] for i in elite_indices]
-        
+        print(elite_bots)
         # Apply genetic operators to create a new population
         new_population = elite_bots.copy()
         while len(new_population) < POPULATION_SIZE:
@@ -157,6 +161,6 @@ def genetic_algorithm():
     best_bot = population[best_bot_index]
     return best_bot
     
-    
+genetic_algorithm()
 
 
