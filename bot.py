@@ -36,53 +36,13 @@ def buy_trigger(t, P, data):
 def sell_trigger(t, P, data):
     return sell(t, P, data) and not sell(t-1, P, data) and not (buy(t, P, data) and not buy(t-1, P, data))
 
-# Define the buy function using MACD indicator
-# TODO: this is definitely not correct :D
-def buy(t, P, data):
-    # Define MACD parameters from P
-    w_slow = int(P[0])
-    w_fast = int(P[1])
-    w_sign = int(P[2])
-    
-    # Get close prices data for MACD calculation
-    prices = data.loc[:t, 'close']
-    
-    # Calculate MACD and signal lines for t
-    macd_indicator = ta.trend.MACD(close=prices, window_slow=w_slow, window_fast=w_fast, window_sign=w_sign, fillna= True)
-    macd_line      = macd_indicator.macd().loc[t]
-    signal_line    = macd_indicator.macd_signal().loc[t]
-    if t-1 >= 0:
-        prev_macd   = macd_indicator.macd().loc[0] 
-        prev_signal = macd_indicator.macd_signal().loc[0]
-    else:
-        prev_macd   = macd_indicator.macd().loc[0] 
-        prev_signal = macd_indicator.macd_signal().loc[0]
-    # Trigger buy signal if MACD line is above signal line
-    return (macd_line > signal_line) and (prev_macd <= prev_signal)
+# Define the buy function
+def buy(t, P):
+    pass
 
-# Define the sell function using MACD indicator
-# TODO: this is definitely not correct :D
-def sell(t, P, data):
-    # Define MACD parameters from P
-    w_slow = int(P[0])
-    w_fast = int(P[1])
-    w_sign = int(P[2])
-    
-    # Get close prices data for MACD calculation
-    prices = data.loc[:t, 'close']
-    
-    # Calculate MACD and signal lines for t
-    macd_indicator = ta.trend.MACD(close=prices, window_slow=w_slow, window_fast=w_fast, window_sign=w_sign, fillna= True)
-    macd_line      = macd_indicator.macd().loc[t]
-    signal_line    = macd_indicator.macd_signal().loc[t]
-    if t-1 >= 0:
-        prev_macd   = macd_indicator.macd().loc[0] 
-        prev_signal = macd_indicator.macd_signal().loc[0]
-    else:
-        prev_macd   = macd_indicator.macd().loc[0] 
-        prev_signal = macd_indicator.macd_signal().loc[0]
-    # Trigger sell signal if MACD line is below signal line
-    return (macd_line < signal_line) and (prev_macd >= prev_signal)
+# Define the sell function
+def sell(t, P):
+    pass
 
 # Define the trading bot function
 # P format = (window_slow, window_fast, window_sign)
@@ -154,7 +114,7 @@ def genetic_algorithm():
         bot = trading_bot(P, data)  # Returns finalAUD
         botInstance = [bot, P]      # [finalAUD, (w_slow, w_fast, w_sign)]
         population.append(botInstance) 
-   
+    
     # Run the genetic algorithm
     for g in range(NUM_GENERATIONS):
         # Evaluate the fitness of each bot in the population
@@ -186,3 +146,52 @@ def genetic_algorithm():
 print(genetic_algorithm())
 
 
+"""
+# Define the buy function using MACD indicator
+# TODO: this is definitely not correct :D
+def buy(t, P, data):
+    # Define MACD parameters from P
+    w_slow = int(P[0])
+    w_fast = int(P[1])
+    w_sign = int(P[2])
+    
+    # Get close prices data for MACD calculation
+    prices = data.loc[:t, 'close']
+    
+    # Calculate MACD and signal lines for t
+    macd_indicator = ta.trend.MACD(close=prices, window_slow=w_slow, window_fast=w_fast, window_sign=w_sign, fillna= True)
+    macd_line      = macd_indicator.macd().loc[t]
+    signal_line    = macd_indicator.macd_signal().loc[t]
+    if t-1 >= 0:
+        prev_macd   = macd_indicator.macd().loc[0] 
+        prev_signal = macd_indicator.macd_signal().loc[0]
+    else:
+        prev_macd   = macd_indicator.macd().loc[0] 
+        prev_signal = macd_indicator.macd_signal().loc[0]
+    # Trigger buy signal if MACD line is above signal line
+    return (macd_line > signal_line) and (prev_macd <= prev_signal)
+
+# Define the sell function using MACD indicator
+# TODO: this is definitely not correct :D
+def sell(t, P, data):
+    # Define MACD parameters from P
+    w_slow = int(P[0])
+    w_fast = int(P[1])
+    w_sign = int(P[2])
+    
+    # Get close prices data for MACD calculation
+    prices = data.loc[:t, 'close']
+    
+    # Calculate MACD and signal lines for t
+    macd_indicator = ta.trend.MACD(close=prices, window_slow=w_slow, window_fast=w_fast, window_sign=w_sign, fillna= True)
+    macd_line      = macd_indicator.macd().loc[t]
+    signal_line    = macd_indicator.macd_signal().loc[t]
+    if t-1 >= 0:
+        prev_macd   = macd_indicator.macd().loc[0] 
+        prev_signal = macd_indicator.macd_signal().loc[0]
+    else:
+        prev_macd   = macd_indicator.macd().loc[0] 
+        prev_signal = macd_indicator.macd_signal().loc[0]
+    # Trigger sell signal if MACD line is below signal line
+    return (macd_line < signal_line) and (prev_macd >= prev_signal)
+"""
