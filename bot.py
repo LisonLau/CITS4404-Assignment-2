@@ -1,3 +1,5 @@
+import ta
+
 class TradingBot:
     # Constructor for TradingBot
     def __init__(self, parameters, data):
