@@ -21,12 +21,80 @@ class TradingBot:
 
     # Buy function
     def buy(self, t, P):
-        # Implement the buy function using the logical expressions provided in the grammar
-        pass
+        dnf = 1
+        for i in range(len(P)):
+            lit = 1
+            if (P[i][0] == "macd"):
+                a = self.macd_indicator(t,P[i])
+                lit = a[0] > a[1] and a[2] <= a[3]
+            elif (P[i][0] == "bb"):
+                pass
+            elif (P[i][0] == "rsi"):
+                pass
+            elif (P[i][0] == "obv"):
+                pass
+            
+            if (i == 0): # for the first literal
+                dnf = lit
+            elif(P[i][1]): # it is an OR conditional
+                dnf = dnf or lit 
+            else: # it is an AND conditional
+                dnf = dnf and lit
+        return dnf
     
     # Sell function
     def sell(self, t, P):
-        # Implement the sell function using the logical expressions provided in the grammar
+        dnf = 1
+        for i in range(len(P)):
+            if (P[i][0] == "macd"):
+                a = self.macd_indicator(t,P[i])
+                lit = a[0] < a[1] and a[2] >= a[3]
+            elif (P[i][0] == "bb"):
+                pass
+            elif (P[i][0] == "rsi"):
+                pass
+            elif (P[i][0] == "obv"):
+                pass
+
+            if (i == 0): # for the first literal
+                dnf = lit
+            elif(P[i][1]): # it is an OR conditional
+                dnf = dnf or lit 
+            else:
+                dnf = dnf and lit
+        return dnf
+
+    def macd_indicator(self, t, P):
+        # Define MACD parameters from P
+        w_slow = int(P[2])
+        w_fast = int(P[3])
+        w_sign = int(P[4])
+        
+        # Get close prices data for MACD calculation
+        prices = self.data.loc[:t, 'close']
+        macd_indicator = ta.trend.MACD(close=prices, window_slow=w_slow, window_fast=w_fast, window_sign=w_sign, fillna= True)
+        macd_line      = macd_indicator.macd().loc[t]
+        signal_line    = macd_indicator.macd_signal().loc[t]
+        if t-1 >= 0:
+            prev_macd   = macd_indicator.macd().loc[0] 
+            prev_signal = macd_indicator.macd_signal().loc[0]
+        else:
+            prev_macd   = macd_indicator.macd().loc[0] 
+            prev_signal = macd_indicator.macd_signal().loc[0]
+        return [macd_line, signal_line, prev_macd, prev_signal]
+
+
+    def bb_indicator(self,t,P):
+        pass
+
+    def rsi_indicator(self,t,P):
+        pass
+
+    def obv_indicator(self,t,P):
+        pass
+
+    # if need make for o,h,l,c,v data
+    def candle_value(self,t):
         pass
 
     # Run the trading bot
@@ -53,7 +121,8 @@ class TradingBot:
                 AUD = BTC * 0.98 * self.data['close'][t]
                 BTC = 0.0
         return AUD
- 
+    
+    
 """
 # Define the buy function using MACD indicator
 # TODO: this is definitely not correct :D
