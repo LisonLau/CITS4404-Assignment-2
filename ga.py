@@ -1,30 +1,17 @@
-import ccxt
-import ta
-import pandas as pd
 import random
-from bot import TradingBot
+import pandas as pd
 
-# Retrieve OHLCV data
-def getOHLCVdata():
-    # Initialize the Kraken exchange
-    kraken = ccxt.kraken()
-    # Retrieve the historical data for BTC/AUD from the Kraken exchange
-    ohlcv = kraken.fetch_ohlcv('BTC/AUD', '1d')
-    # Convert the data to a pandas DataFrame
-    data = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
-    # Convert the timestamp to a datetime object
-    data['timestamp'] = pd.to_datetime(data['timestamp'], unit='ms')
-    return data
+from bot import TradingBot
 
 class GeneticAlgorithm:
     
     # Constructor for GeneticAlgorithm
-    def __init__(self, population_size, num_generations, mutation_rate, crossover_rate):
+    def __init__(self, population_size, num_generations, mutation_rate, crossover_rate, data):
         self.population_size = population_size
         self.mutation_rate = mutation_rate
         self.crossover_rate = crossover_rate
         self.num_generations = num_generations
-        self.data = getOHLCVdata()
+        self.data = data
         
         # Define the range of parameter values for the MACD indicator
         self.PARAMETER_RANGES = {
@@ -36,7 +23,7 @@ class GeneticAlgorithm:
     def run(self):
         # Generate an initial population of bots with different parameters
         population = []
-        for n in range(POPULATION_SIZE):
+        for n in range(self.population_size):
             # Gets random parameters within the ranges specified
             w_slow = random.choice(self.PARAMETER_RANGES['window_slow'])
             w_fast = random.choice(self.PARAMETER_RANGES['window_fast'])
@@ -97,7 +84,7 @@ class GeneticAlgorithm:
     def crossover(self, parent1, parent2):
         child1 = parent1.copy()
         child2 = parent2.copy()
-        if random.random() < CROSSOVER_RATE:
+        if random.random() < self.crossover_rate:
             crossover_point = random.randint(1, len(parent1[1]) - 1)
             child1[1][:crossover_point] = parent2[1][:crossover_point]
             child2[1][:crossover_point] = parent1[1][:crossover_point]
@@ -107,7 +94,7 @@ class GeneticAlgorithm:
     def mutation(self, bot):
         mutated_bot = bot.copy()
         for i in range(len(mutated_bot[1])):
-            if random.random() < MUTATION_RATE:
+            if random.random() < self.mutation_rate:
                 if i == 0:
                     mutated_bot[1][i] = random.choice(self.PARAMETER_RANGES['window_slow'])
                 elif i == 1:
@@ -115,12 +102,3 @@ class GeneticAlgorithm:
                 elif i == 2:
                     mutated_bot[1][i] = random.choice(self.PARAMETER_RANGES['window_sign'])
         return mutated_bot
-    
-# Define genetic algorithm parameters
-POPULATION_SIZE = 10
-NUM_GENERATIONS = 50
-MUTATION_RATE   = 0.1
-CROSSOVER_RATE  = 0.8
-
-ga = GeneticAlgorithm(POPULATION_SIZE, NUM_GENERATIONS, MUTATION_RATE, CROSSOVER_RATE)
-print(ga.run())

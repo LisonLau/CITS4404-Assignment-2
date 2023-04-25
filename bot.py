@@ -1,6 +1,4 @@
 import ta
-import ccxt
-import pandas as pd
 
 class TradingBot:
     # Constructor for TradingBot
