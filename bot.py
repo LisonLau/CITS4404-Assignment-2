@@ -1,4 +1,6 @@
 import ta
+import ccxt
+import pandas as pd
 
 class TradingBot:
     # Constructor for TradingBot
@@ -25,7 +27,7 @@ class TradingBot:
         for i in range(len(P)):
             lit = 1
             if (P[i][0] == "macd"):
-                a = self.macd_indicator(t,P)
+                a = self.macd_indicator(t,P[i])
                 lit = a[0] > a[1] and a[2] <= a[3]
             elif (P[i][0] == "bb"):
                 pass
@@ -121,7 +123,8 @@ class TradingBot:
                 AUD = BTC * 0.98 * self.data['close'][t]
                 BTC = 0.0
         return AUD
- 
+    
+    
 """
 # Define the buy function using MACD indicator
 # TODO: this is definitely not correct :D
