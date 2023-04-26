@@ -1,5 +1,7 @@
 import ta
 
+RSI_OVERBOUGHT = 70
+RSI_OVERSOLD = 30
 class TradingBot:
     # Constructor for TradingBot
     def __init__(self, parameters, data):
@@ -30,7 +32,8 @@ class TradingBot:
             elif (P[i][0] == "bb"):
                 pass
             elif (P[i][0] == "rsi"):
-                pass
+                a = self.rsi_indicator(t, P[i])
+                lit = a < RSI_OVERSOLD
             elif (P[i][0] == "obv"):
                 pass
             
@@ -52,7 +55,8 @@ class TradingBot:
             elif (P[i][0] == "bb"):
                 pass
             elif (P[i][0] == "rsi"):
-                pass
+                a = self.rsi_indicator(t, P[i])
+                lit = a > RSI_OVERBOUGHT
             elif (P[i][0] == "obv"):
                 pass
 
@@ -88,7 +92,15 @@ class TradingBot:
         pass
 
     def rsi_indicator(self,t,P):
-        pass
+        # Define RSI indicators from P
+        rsi_window = int(P[1])
+
+        prices = self.data.loc[:t, 'close']
+
+        rsi_indicator = ta.momentum.RSIIndicator(close = prices, window=rsi_window, fillna=True)
+        rsi_line = rsi_indicator.rsi()
+
+        return rsi_line 
 
     def obv_indicator(self,t,P):
         pass
