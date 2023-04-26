@@ -53,6 +53,7 @@ class TradingBot:
                 a = self.macd_indicator(t,P[i])
                 lit = a[0] < a[1] and a[2] >= a[3]
             elif (P[i][0] == "bb"):
+                a = self.bb_indicator(t, P[i])
                 pass
             elif (P[i][0] == "rsi"):
                 a = self.rsi_indicator(t, P[i])
@@ -89,12 +90,21 @@ class TradingBot:
 
 
     def bb_indicator(self,t,P):
-        pass
+        # Define Bollinger Bands parameters
+        window = int(P[2])
+        window_dev = int(P[3])
+
+        prices = self.data.loc[:t, 'close']
+        bb_ind = ta.volatility.BollingerBands(close=prices,
+                                              window=window,
+                                              window_dev=window_dev)
+
 
     def rsi_indicator(self,t,P):
-        # Define RSI indicators from P
-        rsi_window = int(P[1])
+        # Define RSI parameters from P
+        rsi_window = int(P[2])
 
+        # Get close prices for RSI
         prices = self.data.loc[:t, 'close']
 
         rsi_indicator = ta.momentum.RSIIndicator(close = prices, window=rsi_window, fillna=True)
