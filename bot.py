@@ -80,9 +80,9 @@ class TradingBot:
         macd_indicator = ta.trend.MACD(close=prices, window_slow=w_slow, window_fast=w_fast, window_sign=w_sign, fillna= True)
         macd_line      = macd_indicator.macd().loc[t]
         signal_line    = macd_indicator.macd_signal().loc[t]
-        if t-1 >= 0:
-            prev_macd   = macd_indicator.macd().loc[0] 
-            prev_signal = macd_indicator.macd_signal().loc[0]
+        if t-1 > 0:
+            prev_macd   = macd_indicator.macd().loc[t-1] 
+            prev_signal = macd_indicator.macd_signal().loc[t-1]
         else:
             prev_macd   = macd_indicator.macd().loc[0] 
             prev_signal = macd_indicator.macd_signal().loc[0]
