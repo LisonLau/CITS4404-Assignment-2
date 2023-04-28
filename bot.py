@@ -1,4 +1,7 @@
+import pandas as pd
+import ccxt
 import ta
+import random
 
 RSI_OVERBOUGHT = 70
 RSI_OVERSOLD = 30
@@ -28,12 +31,12 @@ class TradingBot:
             lit = 1
             if (P[i][0] == "macd"):
                 a = self.macd_indicator(t,P[i])
-                lit = a[0] > a[1] and a[2] <= a[3]
+                lit = a[0] > a[1] and a[2] < a[3]
             elif (P[i][0] == "bb"):
                 pass
             elif (P[i][0] == "rsi"):
                 a = self.rsi_indicator(t, P[i])
-                lit = a < RSI_OVERSOLD
+                lit = a.item() < RSI_OVERSOLD
             elif (P[i][0] == "obv"):
                 pass
             
@@ -51,13 +54,15 @@ class TradingBot:
         for i in range(len(P)):
             if (P[i][0] == "macd"):
                 a = self.macd_indicator(t,P[i])
-                lit = a[0] < a[1] and a[2] >= a[3]
+                lit = a[0] < a[1] and a[2] > a[3]
+                print(lit)
             elif (P[i][0] == "bb"):
                 a = self.bb_indicator(t, P[i])
                 pass
             elif (P[i][0] == "rsi"):
                 a = self.rsi_indicator(t, P[i])
-                lit = a > RSI_OVERBOUGHT
+
+                lit = a.item() > RSI_OVERBOUGHT
             elif (P[i][0] == "obv"):
                 pass
 
@@ -77,15 +82,17 @@ class TradingBot:
         
         # Get close prices data for MACD calculation
         prices = self.data.loc[:t, 'close']
-        macd_indicator = ta.trend.MACD(close=prices, window_slow=w_slow, window_fast=w_fast, window_sign=w_sign, fillna= True)
+        macd_indicator = ta.trend.MACD(close=prices, window_slow=w_slow, window_fast=w_fast, window_sign=w_sign)
         macd_line      = macd_indicator.macd().loc[t]
         signal_line    = macd_indicator.macd_signal().loc[t]
+
         if t-1 > 0:
             prev_macd   = macd_indicator.macd().loc[t-1] 
             prev_signal = macd_indicator.macd_signal().loc[t-1]
         else:
             prev_macd   = macd_indicator.macd().loc[0] 
             prev_signal = macd_indicator.macd_signal().loc[0]
+        
         return [macd_line, signal_line, prev_macd, prev_signal]
 
 
@@ -107,8 +114,12 @@ class TradingBot:
         # Get close prices for RSI
         prices = self.data.loc[:t, 'close']
 
-        rsi_indicator = ta.momentum.RSIIndicator(close = prices, window=rsi_window, fillna=True)
-        rsi_line = rsi_indicator.rsi()
+        rsi_indicator = ta.momentum.RSIIndicator(close = prices, window = rsi_window)
+
+        if t-1 > 0:
+            rsi_line  = rsi_indicator.rsi().loc[t-1] 
+        else:
+            rsi_line  = rsi_indicator.rsi().loc[0] 
 
         return rsi_line 
 
@@ -194,3 +205,24 @@ def sell(t, P, data):
     # Trigger sell signal if MACD line is below signal line
     return (macd_line < signal_line) and (prev_macd >= prev_signal)
 """
+
+def getOHLCVdata():
+    # Initialize the Kraken exchange
+    kraken = ccxt.kraken()
+    # Retrieve the historical data for BTC/AUD from the Kraken exchange
+    ohlcv = kraken.fetch_ohlcv('BTC/AUD', '1d')
+    # Convert the data to a pandas DataFrame
+    data = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+    # Convert the timestamp to a datetime object
+    data['timestamp'] = pd.to_datetime(data['timestamp'], unit='ms')
+    return data
+
+data = getOHLCVdata()
+# data['rsi'] = ta.momentum.RSIIndicator(data['close']).rsi()
+# data['macd'] = ta.trend.MACD(data['close']).macd()
+# data['macd_signal'] = ta.trend.MACD(data['close']).macd_signal()
+# print(data[10:70])
+# a = TradingBot([["macd", 1, 26, 12, 9]],data)
+a = TradingBot([["rsi", 1, 14]], data)
+aud = a.run()
+print(aud)

@@ -24,3 +24,4 @@ if __name__ == '__main__':
     DATA = getOHLCVdata()
     ga = GeneticAlgorithm(POPULATION_SIZE, NUM_GENERATIONS, MUTATION_RATE, CROSSOVER_RATE, DATA)
     print(ga.run())
+
