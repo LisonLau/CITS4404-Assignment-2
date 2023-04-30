@@ -150,15 +150,15 @@ class TradingBot:
                 buy_triggered = True
                 BTC = AUD * 0.98 / self.data['close'][t]
                 AUD = 0.0
-                print("btc {}".format(BTC))
+                print("{} btc {}".format(t, BTC))
             # Check if a sell trigger occurs and there is no concurrent buy trigger
             elif self.sell_trigger(t, self.P) and buy_triggered:
                 buy_triggered = False
                 AUD = BTC * 0.98 * self.data['close'][t]
                 BTC = 0.0
-                print("aud {}".format(AUD))
+                print("{} aud {}".format(t, AUD))
             # Sell remaining BTC at the end of the test period
-            elif t == len(self.data)-1 and BTC > 0:
+            if t == len(self.data)-1 and BTC > 0:
                 AUD = BTC * 0.98 * self.data['close'][t]
                 BTC = 0.0
         return AUD
