@@ -39,6 +39,7 @@ class GeneticAlgorithm:
     def run(self):
         # Generate an initial population of bots with different parameters
         population = []
+        # TODO: include default values in initial population
         for n in range(self.population_size):
             # Gets random parameters within the ranges specified
             P = []
