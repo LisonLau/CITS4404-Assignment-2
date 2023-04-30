@@ -6,15 +6,11 @@ import random
 RSI_OVERBOUGHT = 70
 RSI_OVERSOLD = 30
 class TradingBot:
+    
     # Constructor for TradingBot
     def __init__(self, parameters, data):
-        # P format = [window_slow, window_fast, window_sign]
         self.P = parameters
-        # self.window_fast = parameters[0]
-        # self.window_slow = parameters[1]
-        # self.window_sign = parameters[2]
         self.data = data
-        # Initialize any other necessary attributes
     
     # Buy trigger function
     def buy_trigger(self, t, P):
@@ -72,11 +68,11 @@ class TradingBot:
                 dnf = dnf and lit
         return dnf
 
+    # MACD indicator
     def macd_indicator(self, t, P):
-        
         macd_line      = self.data["macd"].loc[t]
         signal_line    = self.data["macd_sig"].loc[t]
-
+        
         if t-1 > 0:
             prev_macd   = self.data["macd"].loc[t-1]
             prev_signal = self.data["macd_sig"].loc[t-1]
@@ -86,20 +82,17 @@ class TradingBot:
         
         return [macd_line, signal_line, prev_macd, prev_signal]
 
-
+    # BB indicator    
     def bb_indicator(self,t,P):
         # Define Bollinger Bands parameters
         window = int(P[2])
         window_dev = int(P[3])
 
         prices = self.data.loc[:t, 'close']
-        bb_ind = ta.volatility.BollingerBands(close=prices,
-                                              window=window,
-                                              window_dev=window_dev)
-
-
+        bb_ind = ta.volatility.BollingerBands(close=prices, window=window, window_dev=window_dev)
+        
+    # RSI indicator
     def rsi_indicator(self,t,P):
-
         # Get close prices for RSI
         if t-1 > 0:
             rsi_line  = self.data["rsi"].loc[t]
@@ -131,8 +124,6 @@ class TradingBot:
                 rsi_indicator = ta.momentum.RSIIndicator(close = prices, window = p[2])
                 self.data["rsi"] = rsi_indicator.rsi()
 
-
-
         # Loop through each day in the data
         for t in range(len(self.data)):
             # Check if a buy trigger occurs and there is no concurrent sell trigger
@@ -146,7 +137,7 @@ class TradingBot:
                 buy_triggered = False
                 AUD = BTC * 0.98 * self.data['close'][t]
                 BTC = 0.0
-                print("aud{}".format(AUD))
+                print("aud {}".format(AUD))
             # Sell remaining BTC at the end of the test period
             elif t == len(self.data)-1 and BTC > 0:
                 AUD = BTC * 0.98 * self.data['close'][t]
@@ -175,3 +166,7 @@ class TradingBot:
 # a = TradingBot([["macd", 1, 26, 12, 9]], data)
 # aud = a.run()
 # print(aud)
+
+# MACD  = ["macd", 1, 26, 12, 9]
+# RSI   = ["rsi", 1 14]
+# BB    = ["bb", 1, ]
