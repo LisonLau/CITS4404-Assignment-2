@@ -41,7 +41,9 @@ class GeneticAlgorithm:
         population = []
         for n in range(self.population_size):
             # Gets random parameters within the ranges specified
-            P = self.getIndicatorCombination()
+            P = []
+            while len(P) == 0:
+                P = self.getIndicatorCombination()
             bot = TradingBot(P, self.data)  # Returns finalAUD
             botInstance = [bot.run(), P]
             population.append(botInstance) 
@@ -72,26 +74,34 @@ class GeneticAlgorithm:
     def fifty_fifty(self):
         return random.random() < 0.5
     
+    # Returns 1 or 0
+    def one_or_zero(self):
+        if random.random() < 0.5:
+            return 1
+        else:
+            return 0
+    
+    # Get random combination of indicators with random parameters within the ranges
     def getIndicatorCombination(self):
         P = []
         if self.fifty_fifty():
             w_slow = random.choice(self.MACD_RANGES['window_slow'])
             w_fast = random.choice(self.MACD_RANGES['window_fast'])
             w_sign = random.choice(self.MACD_RANGES['window_sign'])
-            macd = ["macd", 1, w_slow, w_fast, w_sign]
+            macd = ["macd", self.one_or_zero(), w_slow, w_fast, w_sign]
             P.append(macd)
         if self.fifty_fifty():
             window = random.choice(self.RSI_RANGES['window'])
-            rsi = ["rsi", 1, window]
+            rsi = ["rsi", self.one_or_zero(), window]
             P.append(rsi)
         if self.fifty_fifty():
             window = random.choice(self.BB_RANGES['window'])
             w_dev  = random.choice(self.BB_RANGES['window_dev'])
-            bb = ["bb", 1, window, w_dev]
+            bb = ["bb", self.one_or_zero(), window, w_dev]
             P.append(bb)
         if self.fifty_fifty():
             window = random.choice(self.SMA_RANGES['window'])
-            sma = ["sma", 1, window]
+            sma = ["sma", self.one_or_zero(), window]
             P.append(sma)
         return P
                 
