@@ -14,10 +14,26 @@ class GeneticAlgorithm:
         self.data = data
         
         # Define the range of parameter values for the MACD indicator
-        self.PARAMETER_RANGES = {
+        self.MACD_RANGES = {
             'window_slow': range(26, 50),
             'window_fast': range(12, 25),
             'window_sign': range(9, 15)
+        }
+        
+        # Define the range of parameter values for the RSI indicator
+        self.RSI_RANGES = {
+            'window': range(10, 25)
+        }
+        
+        # Define the range of parameter values for the BB indicator
+        self.BB_RANGES = {
+            'window'    : range(20, 30),
+            'window_dev': range(2, 3)
+        }
+        
+        # Define the range of parameter values for the SMA indicator
+        self.SMA_RANGES = {
+            'window': range(20, 200, 10)
         }
         
     def run(self):
@@ -25,10 +41,7 @@ class GeneticAlgorithm:
         population = []
         for n in range(self.population_size):
             # Gets random parameters within the ranges specified
-            w_slow = random.choice(self.PARAMETER_RANGES['window_slow'])
-            w_fast = random.choice(self.PARAMETER_RANGES['window_fast'])
-            w_sign = random.choice(self.PARAMETER_RANGES['window_sign'])
-            P = [w_slow, w_fast, w_sign]
+            P = self.getIndicatorCombination()
             bot = TradingBot(P, self.data)  # Returns finalAUD
             botInstance = [bot.run(), P]
             population.append(botInstance) 
@@ -55,6 +68,33 @@ class GeneticAlgorithm:
         best_bot = population[best_bot_index]
         return best_bot
     
+    # 50% chance
+    def fifty_fifty(self):
+        return random.random() < 0.5
+    
+    def getIndicatorCombination(self):
+        P = []
+        if self.fifty_fifty():
+            w_slow = random.choice(self.MACD_RANGES['window_slow'])
+            w_fast = random.choice(self.MACD_RANGES['window_fast'])
+            w_sign = random.choice(self.MACD_RANGES['window_sign'])
+            macd = ["macd", 1, w_slow, w_fast, w_sign]
+            P.append(macd)
+        if self.fifty_fifty():
+            window = random.choice(self.RSI_RANGES['window'])
+            rsi = ["rsi", 1, window]
+            P.append(rsi)
+        if self.fifty_fifty():
+            window = random.choice(self.BB_RANGES['window'])
+            w_dev  = random.choice(self.BB_RANGES['window_dev'])
+            bb = ["bb", 1, window, w_dev]
+            P.append(bb)
+        if self.fifty_fifty():
+            window = random.choice(self.SMA_RANGES['window'])
+            sma = ["sma", 1, window]
+            P.append(sma)
+        return P
+                
     # Calculate fitness function
     def calculate_fitness(self, bot_final_AUD):
         profit = bot_final_AUD - 100.0
@@ -73,11 +113,12 @@ class GeneticAlgorithm:
     # Create offspring by applying through genetic operators crossover and mutation
     def reproduce(self, parents):
         offspring = parents.copy()
-        while len(offspring) < self.population_size:
-            parent1 = random.choice(parents)
-            parent2 = random.choice(parents)
-            child1, child2 = self.crossover(parent1, parent2)
-            offspring.extend([self.mutation(child1), self.mutation(child2)])
+        # TODO: fix mutation and crossover to fit the parameters
+        # while len(offspring) < self.population_size:
+        #     parent1 = random.choice(parents)
+        #     parent2 = random.choice(parents)
+            # child1, child2 = self.crossover(parent1, parent2)
+            # offspring.extend([self.mutation(child1), self.mutation(child2)])
         return offspring
     
     # Crossover function
@@ -96,9 +137,9 @@ class GeneticAlgorithm:
         for i in range(len(mutated_bot[1])):
             if random.random() < self.mutation_rate:
                 if i == 0:
-                    mutated_bot[1][i] = random.choice(self.PARAMETER_RANGES['window_slow'])
+                    mutated_bot[1][i] = random.choice(self.MACD_RANGES['window_slow'])
                 elif i == 1:
-                    mutated_bot[1][i] = random.choice(self.PARAMETER_RANGES['window_fast'])
+                    mutated_bot[1][i] = random.choice(self.MACD_RANGES['window_fast'])
                 elif i == 2:
-                    mutated_bot[1][i] = random.choice(self.PARAMETER_RANGES['window_sign'])
+                    mutated_bot[1][i] = random.choice(self.MACD_RANGES['window_sign'])
         return mutated_bot

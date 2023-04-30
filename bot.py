@@ -164,21 +164,21 @@ class TradingBot:
         return AUD
     
     
-def getOHLCVdata():
-    # Initialize the Kraken exchange
-    kraken = ccxt.kraken()
-    # Retrieve the historical data for BTC/AUD from the Kraken exchange
-    ohlcv = kraken.fetch_ohlcv('BTC/AUD', '1d')
-    # Convert the data to a pandas DataFrame
-    data = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
-    # Convert the timestamp to a datetime object
-    data['timestamp'] = pd.to_datetime(data['timestamp'], unit='ms')
-    return data
+# def getOHLCVdata():
+#     # Initialize the Kraken exchange
+#     kraken = ccxt.kraken()
+#     # Retrieve the historical data for BTC/AUD from the Kraken exchange
+#     ohlcv = kraken.fetch_ohlcv('BTC/AUD', '1d')
+#     # Convert the data to a pandas DataFrame
+#     data = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+#     # Convert the timestamp to a datetime object
+#     data['timestamp'] = pd.to_datetime(data['timestamp'], unit='ms')
+#     return data
 
-data = getOHLCVdata()
-a = TradingBot([["bb", 1, 20, 2], ["macd", 1, 26, 12, 9], ["rsi", 1, 14], ["bb", 1, 20, 2]], data)
-aud = a.run()
-print(aud)
+# data = getOHLCVdata()
+# a = TradingBot([["bb", 1, 20, 2], ["macd", 1, 26, 12, 9], ["rsi", 1, 14], ["bb", 1, 20, 2]], data)
+# aud = a.run()
+# print(aud)
 
 # MACD  = ["macd", 1, 26, 12, 9]
 # RSI   = ["rsi", 1, 14]

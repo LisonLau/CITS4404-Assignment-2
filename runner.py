@@ -17,7 +17,7 @@ def getOHLCVdata():
 
 if __name__ == '__main__':
     # Define genetic algorithm parameters
-    POPULATION_SIZE = 10
+    POPULATION_SIZE = 20
     NUM_GENERATIONS = 50
     MUTATION_RATE   = 0.1
     CROSSOVER_RATE  = 0.8
