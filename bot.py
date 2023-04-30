@@ -31,7 +31,7 @@ class TradingBot:
             lit = 1
             if (P[i][0] == "macd"):
                 a = self.macd_indicator(t,P[i])
-                lit = a[0] > a[1] and a[2] < a[3]
+                lit = a[0] > a[1] and a[2] < a[3] and a[0]>0
             elif (P[i][0] == "bb"):
                 pass
             elif (P[i][0] == "rsi"):
@@ -54,7 +54,7 @@ class TradingBot:
         for i in range(len(P)):
             if (P[i][0] == "macd"):
                 a = self.macd_indicator(t,P[i])
-                lit = a[0] < a[1] and a[2] > a[3]
+                lit = a[0] < a[1] and a[2] > a[3] and a[0] < 0
             elif (P[i][0] == "bb"):
                 a = self.bb_indicator(t, P[i])
                 pass
@@ -155,23 +155,23 @@ class TradingBot:
     
     
 
-# def getOHLCVdata():
-#     # Initialize the Kraken exchange
-#     kraken = ccxt.kraken()
-#     # Retrieve the historical data for BTC/AUD from the Kraken exchange
-#     ohlcv = kraken.fetch_ohlcv('BTC/AUD', '1d')
-#     # Convert the data to a pandas DataFrame
-#     data = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
-#     # Convert the timestamp to a datetime object
-#     data['timestamp'] = pd.to_datetime(data['timestamp'], unit='ms')
-#     return data
+def getOHLCVdata():
+    # Initialize the Kraken exchange
+    kraken = ccxt.kraken()
+    # Retrieve the historical data for BTC/AUD from the Kraken exchange
+    ohlcv = kraken.fetch_ohlcv('BTC/AUD', '1d')
+    # Convert the data to a pandas DataFrame
+    data = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+    # Convert the timestamp to a datetime object
+    data['timestamp'] = pd.to_datetime(data['timestamp'], unit='ms')
+    return data
 
-# data = getOHLCVdata()
-# # data['rsi'] = ta.momentum.RSIIndicator(data['close']).rsi()
-# # data['macd'] = ta.trend.MACD(data['close']).macd()
-# # data['macd_signal'] = ta.trend.MACD(data['close']).macd_signal()
-# # print(data[10:70])
-# # a = TradingBot([["macd", 1, 26, 12, 9]],data)
-# a = TradingBot([["macd", 1, 26, 12, 9]], data)
-# aud = a.run()
-# print(aud)
+data = getOHLCVdata()
+# data['rsi'] = ta.momentum.RSIIndicator(data['close']).rsi()
+# data['macd'] = ta.trend.MACD(data['close']).macd()
+# data['macd_signal'] = ta.trend.MACD(data['close']).macd_signal()
+# print(data[10:70])
+# a = TradingBot([["macd", 1, 26, 12, 9]],data)
+a = TradingBot([["macd", 1, 26, 12, 9]], data)
+aud = a.run()
+print(aud)
