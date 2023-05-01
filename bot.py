@@ -12,6 +12,7 @@ class TradingBot:
     def __init__(self, parameters, data):
         self.P = parameters
         self.data = data
+        self.obv_window = 30;
     
     # Buy trigger function
     def buy_trigger(self, t, P):
@@ -24,8 +25,9 @@ class TradingBot:
     # Buy function
     def buy(self, t, P):
         dnf = 1
+
         for i in range(len(P)):
-            lit = 1
+            lit = 0
             if (P[i][0] == "macd"):
                 a = self.macd_indicator(t)
                 lit = a[0] > a[1] and a[2] < a[3] and a[0] > 0
@@ -38,6 +40,9 @@ class TradingBot:
             elif (P[i][0] == "sma"):
                 a = self.sma_indicator(t)
                 lit = a[0] > self.data['close'][t] and a[1] <= self.data['close'][t-1]
+            elif (P[i][0] == "obv" and t >= 30):
+                a = self.obv_indicator(t)
+                lit = a[0] < a[1] and self.data['close'][t-30] > self.data['close'][t]
             if (i == 0):            # for the first literal
                 dnf = lit
             elif(P[i][1]==1):       # it is an OR conditional
@@ -48,8 +53,9 @@ class TradingBot:
     
     # Sell function
     def sell(self, t, P):
-        dnf = 1
+        dnf = 1        
         for i in range(len(P)):
+            lit = 0
             if (P[i][0] == "macd"):
                 a = self.macd_indicator(t)
                 lit = a[0] < a[1] and a[2] > a[3] and a[0] < 0
@@ -62,6 +68,9 @@ class TradingBot:
             elif (P[i][0] == "bb"):
                 a = self.bb_indicator(t)
                 lit = a[1] < self.data['close'][t] and a[3] > self.data['close'][t-1]
+            elif (P[i][0] == "obv" and t >= 30):
+                a = self.obv_indicator(t)
+                lit = a[0] > a[1] and self.data['close'][t-30]< self.data['close'][t]
             if (i == 0):            # for the first literal
                 dnf = lit
             elif(P[i][1]):          # it is an OR conditional
@@ -112,6 +121,14 @@ class TradingBot:
         else:
             previous = self.data["sma"].loc[0]
         return [current, previous]
+    
+    def obv_indicator(self, t):
+        cur_vol = self.data["obv"].loc[t]
+        if t-self.obv_window >= 0:
+            prev_vol = self.data["obv"].loc[t-self.obv_window]
+        else:
+            prev_vol = self.data["obv"].loc[0]
+        return [cur_vol, prev_vol]
 
     # If need make for OHLVC data
     def candle_value(self, t):
@@ -124,6 +141,7 @@ class TradingBot:
         BTC = 0.0       # starting BTC holdings
         buy_triggered = False
         prices = self.data['close']
+        volumes = self.data['volume']
         
         # Store indicators in the dataframe
         for p in self.P:
@@ -142,6 +160,10 @@ class TradingBot:
             elif type == "sma":
                 sma_indicator = ta.trend.SMAIndicator(close=prices, window=p[2])
                 self.data["sma"] = sma_indicator.sma_indicator()
+            elif type == "obv":
+                obv_indicator = ta.volume.OnBalanceVolumeIndicator(close=prices, volume=volumes)
+                self.data["obv"] = obv_indicator.on_balance_volume()
+                self.obv_window = p[2]
         
         # Loop through each day in the data
         for t in range(len(self.data)):
@@ -164,23 +186,24 @@ class TradingBot:
         return AUD
     
     
-# def getOHLCVdata():
-#     # Initialize the Kraken exchange
-#     kraken = ccxt.kraken()
-#     # Retrieve the historical data for BTC/AUD from the Kraken exchange
-#     ohlcv = kraken.fetch_ohlcv('BTC/AUD', '1d')
-#     # Convert the data to a pandas DataFrame
-#     data = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
-#     # Convert the timestamp to a datetime object
-#     data['timestamp'] = pd.to_datetime(data['timestamp'], unit='ms')
-#     return data
+def getOHLCVdata():
+    # Initialize the Kraken exchange
+    kraken = ccxt.kraken()
+    # Retrieve the historical data for BTC/AUD from the Kraken exchange
+    ohlcv = kraken.fetch_ohlcv('BTC/AUD', '1d')
+    # Convert the data to a pandas DataFrame
+    data = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+    # Convert the timestamp to a datetime object
+    data['timestamp'] = pd.to_datetime(data['timestamp'], unit='ms')
+    return data
 
-# data = getOHLCVdata()
-# a = TradingBot([["bb", 1, 20, 2], ["macd", 1, 26, 12, 9], ["rsi", 1, 14], ["bb", 1, 20, 2]], data)
-# aud = a.run()
-# print(aud)
+data = getOHLCVdata()
+a = TradingBot([["obv", 1, 30]], data)
+aud = a.run()
+print(aud)
 
 # MACD  = ["macd", 1, 26, 12, 9]
 # RSI   = ["rsi", 1, 14]
 # BB    = ["bb", 1, 20, 2]
 # SMA   = ["sma", 1, 20]
+# OBV = ["obv", 1, 30] wondow length
