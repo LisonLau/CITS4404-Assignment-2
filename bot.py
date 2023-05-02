@@ -1,7 +1,5 @@
-import pandas as pd
-import ccxt
 import ta
-import random
+import header
 
 RSI_OVERBOUGHT = 70
 RSI_OVERSOLD = 30
@@ -33,7 +31,7 @@ class TradingBot:
             lit = 0
             if (P[i][0] == "macd"):
                 a = self.macd_indicator(t)
-                lit = a[0] > a[1] and a[2] < a[3] and a[0] > 0
+                lit =  a[0] > 0
             elif (P[i][0] == "bb"):
                 a = self.bb_indicator(t)
                 lit = a[0] > self.data['close'][t] and a[2] < self.data['close'][t-1]
@@ -62,7 +60,7 @@ class TradingBot:
             lit = 0
             if (P[i][0] == "macd"):
                 a = self.macd_indicator(t)
-                lit = a[0] < a[1] and a[2] > a[3] and a[0] < 0
+                lit = a[0] < 0
             elif (P[i][0] == "rsi"):
                 a = self.rsi_indicator(t)
                 lit = a.item() > RSI_OVERBOUGHT   
@@ -177,13 +175,13 @@ class TradingBot:
                 buy_triggered = True
                 BTC = AUD * 0.98 / self.data['close'][t]
                 AUD = 0.0
-                print("{} btc {}".format(t, BTC))
+                # print("{} btc {}".format(t, BTC))
             # Check if a sell trigger occurs and there is no concurrent buy trigger
             elif self.sell_trigger(t, self.P) and buy_triggered:
                 buy_triggered = False
                 AUD = BTC * 0.98 * self.data['close'][t]
                 BTC = 0.0
-                print("{} aud {}".format(t, AUD))
+                # print("{} aud {}".format(t, AUD))
             # Sell remaining BTC at the end of the test period
             if t == len(self.data)-1 and BTC > 0:
                 AUD = BTC * 0.98 * self.data['close'][t]
@@ -193,21 +191,21 @@ class TradingBot:
         return AUD
     
     
-def getOHLCVdata():
-    # Initialize the Kraken exchange
-    kraken = ccxt.kraken()
-    # Retrieve the historical data for BTC/AUD from the Kraken exchange
-    ohlcv = kraken.fetch_ohlcv('BTC/AUD', '1d')
-    # Convert the data to a pandas DataFrame
-    data = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
-    # Convert the timestamp to a datetime object
-    data['timestamp'] = pd.to_datetime(data['timestamp'], unit='ms')
-    return data
+# def getOHLCVdata():
+#     # Initialize the Kraken exchange
+#     kraken = ccxt.kraken()
+#     # Retrieve the historical data for BTC/AUD from the Kraken exchange
+#     ohlcv = kraken.fetch_ohlcv('BTC/AUD', '1d')
+#     # Convert the data to a pandas DataFrame
+#     data = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+#     # Convert the timestamp to a datetime object
+#     data['timestamp'] = pd.to_datetime(data['timestamp'], unit='ms')
+#     return data
 
-data = getOHLCVdata()
-a = TradingBot([["obv", 1, 30], ["macd", 1, 26, 12, 9]], data)
-aud = a.run()
-print(aud)
+# data = getOHLCVdata()
+# a = TradingBot([["macd", 1, 26, 12, 9],["obv", 0, 15]], data)
+# aud = a.run()
+# print(aud)
 
 # MACD  = ["macd", 1, 26, 12, 9]
 # RSI   = ["rsi", 1, 14]

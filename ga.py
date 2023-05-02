@@ -1,5 +1,5 @@
 import random
-import pandas as pd
+import header
 
 from bot import TradingBot
 
@@ -36,7 +36,12 @@ class GeneticAlgorithm:
             'window': range(20, 200, 10)
         }
         
-    def run(self):
+        # Define the range of parameter values for the OBV indicator 
+        self.OBV_RANGES = {
+            'window': range(10,100,10)
+        }
+
+    def run(self): 
         # Generate an initial population of bots with different parameters
         population = []
         # TODO: include default values in initial population
@@ -104,6 +109,10 @@ class GeneticAlgorithm:
             window = random.choice(self.SMA_RANGES['window'])
             sma = ["sma", self.one_or_zero(), window]
             P.append(sma)
+        if self.fifty_fifty():
+            window = random.choice(self.OBV_RANGES['window'])
+            obv = ["sma", self.one_or_zero(), window]
+            P.append(obv)
         return P
                 
     # Calculate fitness function

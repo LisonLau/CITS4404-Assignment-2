@@ -1,5 +1,6 @@
-import ccxt
 import pandas as pd
+import ccxt
+import header
 
 from ga import GeneticAlgorithm
 
