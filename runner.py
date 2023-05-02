@@ -20,7 +20,7 @@ if __name__ == '__main__':
     # Define genetic algorithm parameters
     POPULATION_SIZE = 20
     NUM_GENERATIONS = 50
-    MUTATION_RATE   = 0.1
+    MUTATION_RATE   = 0.3
     CROSSOVER_RATE  = 0.5
     DATA = getOHLCVdata()
     ga = GeneticAlgorithm(POPULATION_SIZE, NUM_GENERATIONS, MUTATION_RATE, CROSSOVER_RATE, DATA)

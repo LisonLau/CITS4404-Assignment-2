@@ -89,53 +89,60 @@ class GeneticAlgorithm:
     
     # Get random combination of indicators with random parameters within the ranges
     def getIndicatorCombination(self):
-        P = []
-        numTrend        = random.randint(0, len(header.TREND)-1)
-        numMomentum     = random.randint(0, len(header.MOMENTUM)-1)
-        numVolume       = random.randint(0, len(header.VOLUME)-1)
-        numVolatiltiy   = random.randint(0, len(header.VOLATILITY)-1)
-        
-        # TREND INDICATORS
+        trend       = self.getTrend(0)
+        momentum    = self.getMomentum(0)
+        volume      = self.getVolume(0)
+        volatility  = self.getVolatility(0)
+        P = [trend, momentum, volume, volatility]
+        return P
+    
+    # TREND INDICATORS
+    def getTrend(self, start):
+        numTrend = random.randint(start, len(header.TREND)-1)
         if numTrend == 0:
-            P.append([header.TREND[numTrend]])
+            return [header.TREND[numTrend]]
         elif numTrend == 1:
             w_slow = random.choice(self.MACD_RANGES['window_slow'])
             w_fast = random.choice(self.MACD_RANGES['window_fast'])
             w_sign = random.choice(self.MACD_RANGES['window_sign'])
             macd = [header.TREND[numTrend], self.one_or_zero(), w_slow, w_fast, w_sign]
-            P.append(macd)
+            return macd
         elif numTrend == 2:
             window = random.choice(self.SMA_RANGES['window'])
             sma = [header.TREND[numTrend], self.one_or_zero(), window]
-            P.append(sma)
+            return sma
             
-        # MOMENTUM INDICATORS
+    # MOMENTUM INDICATORS
+    def getMomentum(self, start):
+        numMomentum = random.randint(start, len(header.MOMENTUM)-1)
         if numMomentum == 0:
-            P.append([header.MOMENTUM[numMomentum]])
+            return [header.MOMENTUM[numMomentum]]
         elif numMomentum == 1:
             window = random.choice(self.RSI_RANGES['window'])
             rsi = [header.MOMENTUM[numMomentum], self.one_or_zero(), window]
-            P.append(rsi)
-            
-        # VOLUME INDICATORS
+            return rsi
+        
+    # VOLUME INDICATORS
+    def getVolume(self, start):
+        numVolume = random.randint(start, len(header.VOLUME)-1)
         if numVolume == 0:
-            P.append([header.VOLUME[numVolume]])
+            return [header.VOLUME[numVolume]]
         elif numVolume == 1:
             window = random.choice(self.OBV_RANGES['window'])
             obv = [header.VOLUME[numVolume], self.one_or_zero(), window]
-            P.append(obv)
-        
-        # VOLATILITY INDICATORS
+            return obv
+    
+    # VOLATILITY INDICATORS
+    def getVolatility(self, start):
+        numVolatiltiy = random.randint(start, len(header.VOLATILITY)-1)
         if numVolatiltiy == 0:
-            P.append([header.VOLATILITY[numVolatiltiy]])
+            return [header.VOLATILITY[numVolatiltiy]]
         elif numVolatiltiy == 1:
             window = random.choice(self.BB_RANGES['window'])
             w_dev  = random.choice(self.BB_RANGES['window_dev'])
             bb = [header.VOLATILITY[numVolatiltiy], self.one_or_zero(), window, w_dev]
-            P.append(bb)
+            return bb
         
-        return P
-                
     # Calculate fitness function
     def calculate_fitness(self, bot_final_AUD):
         profit = bot_final_AUD - 100.0
@@ -182,9 +189,13 @@ class GeneticAlgorithm:
     def mutation(self, bot):
         mutated_bot = copy.deepcopy(bot)
 
+        # [TREND, MOMENTUM, VOLUME, VOLATILITY]
         for i in range(4):
             if mutated_bot[1][i][0] == "":
-                continue
+                if random.random() < self.mutation_rate:
+                    print(mutated_bot)
+                    mutated_bot[1][i] = self.introduceIndicator(i)
+                    print(mutated_bot)
             elif mutated_bot[1][i][0] == "macd":
                 if random.random() < self.mutation_rate:
                     mutated_bot[1][i][1] = not mutated_bot[1][i][1]
@@ -218,3 +229,18 @@ class GeneticAlgorithm:
                     mutated_bot[1][i][3] = random.choice(self.BB_RANGES['window_dev'])
    
         return mutated_bot
+    
+    def introduceIndicator(self, idx):
+        if idx == 0: # TREND
+            trend = self.getTrend(1)
+            return trend
+        elif idx == 1: # MOMENTUM
+            momentum = self.getMomentum(1)
+            return momentum
+        elif idx == 2: # VOLUME
+            volume = self.getVolume(1)
+            return volume
+        elif idx == 3: # VOLATILITY
+            volatility = self.getVolatility(1)
+            return volatility
+        
