@@ -68,6 +68,7 @@ class GeneticAlgorithm:
             
             # Replace the old population with the new one
             population = offspring
+            # print(population)
             
         # Evaluate the fitness of the final population
         fitness_scores = self.evaluate_fitness(population)
@@ -156,7 +157,6 @@ class GeneticAlgorithm:
             parent1 = random.choice(parents)
             parent2 = random.choice(parents)
             child1, child2 = self.crossover(parent1, parent2)
-            offspring.extend([child1, child2])
             offspring.extend([self.mutation(child1), self.mutation(child2)])
         return offspring
     
