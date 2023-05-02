@@ -1,5 +1,6 @@
 import random
 import header
+import copy
 
 from bot import TradingBot
 
@@ -68,15 +69,14 @@ class GeneticAlgorithm:
             
             # Replace the old population with the new one
             population = offspring
-            # print(population)
             
         # Evaluate the fitness of the final population
-            fitness_scores = self.evaluate_fitness(population)
+        fitness_scores = self.evaluate_fitness(population)
+        
+        # Return the best performing bot in the final population
+        best_bot_index = fitness_scores.index(max(fitness_scores))
+        best_bot = population[best_bot_index]
             
-            # Return the best performing bot in the final population
-            best_bot_index = fitness_scores.index(max(fitness_scores))
-            best_bot = population[best_bot_index]
-            print(best_bot)
         return best_bot
     
     # Returns 1 or 0
@@ -148,23 +148,27 @@ class GeneticAlgorithm:
     def select_parents(self, population, fitness_scores):
         elite_indices = sorted(range(len(fitness_scores)), key=lambda i: fitness_scores[i], reverse=True)[:self.population_size // 2]
         elite_bots = [population[i] for i in elite_indices]
-        print(elite_bots)
         return elite_bots
     
     # Create offspring by applying through genetic operators crossover and mutation
     def reproduce(self, parents):
-        offspring = parents.copy()
-        while len(offspring) < self.population_size:
+        new_population = copy.deepcopy(parents)
+        offspring = []
+        while len(offspring) < self.population_size // 2:
             parent1 = random.choice(parents)
             parent2 = random.choice(parents)
             child1, child2 = self.crossover(parent1, parent2)
-            offspring.extend([self.mutation(child1), self.mutation(child2)])
-        return offspring
+            child1 = self.mutation(child1)
+            child2 = self.mutation(child2)
+            offspring.append(child1)
+            offspring.append(child2)
+        new_population.extend(offspring)
+        return new_population
     
     # Crossover function
     def crossover(self, parent1, parent2):
-        child1 = parent1.copy()
-        child2 = parent2.copy()
+        child1 = copy.deepcopy(parent1)
+        child2 = copy.deepcopy(parent2)
         for i in range(4):
             if random.random() < self.crossover_rate:
                 a = child1[1][i]
@@ -175,7 +179,7 @@ class GeneticAlgorithm:
     
     # Mutation function
     def mutation(self, bot):
-        mutated_bot = bot.copy()
+        mutated_bot = copy.deepcopy(bot)
 
         for i in range(4):
             if mutated_bot[1][i][0] == "":
