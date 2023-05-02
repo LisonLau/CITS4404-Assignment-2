@@ -25,7 +25,6 @@ class TradingBot:
     # Buy function
     def buy(self, t, P):
         dnf = 1
-
         for i in range(len(P)):
             lit = 0
             if (P[i][0] == "macd"):
@@ -53,7 +52,7 @@ class TradingBot:
     
     # Sell function
     def sell(self, t, P):
-        dnf = 1        
+        dnf = 1
         for i in range(len(P)):
             lit = 0
             if (P[i][0] == "macd"):
@@ -198,7 +197,7 @@ def getOHLCVdata():
     return data
 
 data = getOHLCVdata()
-a = TradingBot([["obv", 1, 30]], data)
+a = TradingBot([["obv", 1, 30], ["macd", 1, 26, 12, 9]], data)
 aud = a.run()
 print(aud)
 
