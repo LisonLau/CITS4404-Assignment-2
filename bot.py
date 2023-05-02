@@ -33,7 +33,7 @@ class TradingBot:
             lit = 0
             if (P[i][0] == "macd"):
                 a = self.macd_indicator(t)
-                lit =  a[0] > 0
+                lit = a[0] > a[1] and a[2] < a[3] and a[0] > 0
             elif (P[i][0] == "bb"):
                 a = self.bb_indicator(t)
                 lit = a[0] > self.data['close'][t] and a[2] < self.data['close'][t-1]
@@ -64,7 +64,7 @@ class TradingBot:
             lit = 0
             if (P[i][0] == "macd"):
                 a = self.macd_indicator(t)
-                lit = a[0] < 0
+                lit = a[0] < a[1] and a[2] > a[3] and a[0] < 0
             elif (P[i][0] == "rsi"):
                 a = self.rsi_indicator(t)
                 lit = a.item() > RSI_OVERBOUGHT   

@@ -44,7 +44,6 @@ class GeneticAlgorithm:
     def run(self): 
         # Generate an initial population of bots with different parameters
         population = []
-        # TODO: include default values in initial population
         for n in range(self.population_size):
             # Gets random parameters within the ranges specified
             P = []
@@ -180,6 +179,8 @@ class GeneticAlgorithm:
                 continue
             elif mutated_bot[1][i][0] == "macd":
                 if random.random() < self.mutation_rate:
+                    mutated_bot[1][i][1] = not mutated_bot[1][i][1]
+                if random.random() < self.mutation_rate:
                     mutated_bot[1][i][2] = random.choice(self.MACD_RANGES['window_slow'])
                 if random.random() < self.mutation_rate:
                     mutated_bot[1][i][3] = random.choice(self.MACD_RANGES['window_fast'])
@@ -187,14 +188,22 @@ class GeneticAlgorithm:
                     mutated_bot[1][i][2] = random.choice(self.MACD_RANGES['window_sign'])
             elif mutated_bot[1][i][0] == "sma":
                 if random.random() < self.mutation_rate:
+                    mutated_bot[1][i][1] = not mutated_bot[1][i][1]
+                if random.random() < self.mutation_rate:
                     mutated_bot[1][i][2] = random.choice(self.SMA_RANGES['window'])
             elif mutated_bot[1][i][0] == "rsi":
+                if random.random() < self.mutation_rate:
+                    mutated_bot[1][i][1] = not mutated_bot[1][i][1]
                 if random.random() < self.mutation_rate:
                     mutated_bot[1][i][2] = random.choice(self.RSI_RANGES['window'])
             elif mutated_bot[1][i][0] == "obv":
                 if random.random() < self.mutation_rate:
+                    mutated_bot[1][i][1] = not mutated_bot[1][i][1]
+                if random.random() < self.mutation_rate:
                     mutated_bot[1][i][2] = random.choice(self.OBV_RANGES['window'])
             elif mutated_bot[1][i][0] == "bb":
+                if random.random() < self.mutation_rate:
+                    mutated_bot[1][i][1] = not mutated_bot[1][i][1]
                 if random.random() < self.mutation_rate:
                     mutated_bot[1][i][2] = random.choice(self.BB_RANGES['window'])
                 if random.random() < self.mutation_rate:
