@@ -21,7 +21,7 @@ if __name__ == '__main__':
     POPULATION_SIZE = 20
     NUM_GENERATIONS = 50
     MUTATION_RATE   = 0.1
-    CROSSOVER_RATE  = 0.8
+    CROSSOVER_RATE  = 0.5
     DATA = getOHLCVdata()
     ga = GeneticAlgorithm(POPULATION_SIZE, NUM_GENERATIONS, MUTATION_RATE, CROSSOVER_RATE, DATA)
     print(ga.run())

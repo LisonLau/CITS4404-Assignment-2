@@ -28,6 +28,8 @@ class TradingBot:
     def buy(self, t, P):
         dnf = 1
         for i in range(len(P)):
+            if (P[i][0] == ""):
+                continue
             lit = 0
             if (P[i][0] == "macd"):
                 a = self.macd_indicator(t)
@@ -57,6 +59,8 @@ class TradingBot:
     def sell(self, t, P):
         dnf = 1
         for i in range(len(P)):
+            if (P[i][0] == ""):
+                continue
             lit = 0
             if (P[i][0] == "macd"):
                 a = self.macd_indicator(t)
@@ -148,6 +152,8 @@ class TradingBot:
         
         # Store indicators in the dataframe
         for p in self.P:
+            if (len(p) == 1):
+                continue
             type = p[0]
             if type =="macd":
                 macd_indicator = ta.trend.MACD(close=prices, window_slow=p[2], window_fast=p[3], window_sign=p[4])
