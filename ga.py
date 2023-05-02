@@ -46,9 +46,7 @@ class GeneticAlgorithm:
         population = []
         for n in range(self.population_size):
             # Gets random parameters within the ranges specified
-            P = []
-            while len(P) == 0:
-                P = self.getIndicatorCombination()
+            P = self.getIndicatorCombination()
             bot = TradingBot(P, self.data)  # Returns finalAUD
             botInstance = [bot.run(), P]
             population.append(botInstance) 
@@ -63,6 +61,10 @@ class GeneticAlgorithm:
             
             # Create offspring through crossover and mutation
             offspring = self.reproduce(parents)
+            
+            for x in offspring:
+                bot = TradingBot(x[1], self.data)
+                x[0] = bot.run()
             
             # Replace the old population with the new one
             population = offspring
