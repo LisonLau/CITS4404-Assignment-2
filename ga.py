@@ -193,9 +193,7 @@ class GeneticAlgorithm:
         for i in range(4):
             if mutated_bot[1][i][0] == "":
                 if random.random() < self.mutation_rate:
-                    print(mutated_bot)
                     mutated_bot[1][i] = self.introduceIndicator(i)
-                    print(mutated_bot)
             elif mutated_bot[1][i][0] == "macd":
                 if random.random() < self.mutation_rate:
                     mutated_bot[1][i][1] = not mutated_bot[1][i][1]
