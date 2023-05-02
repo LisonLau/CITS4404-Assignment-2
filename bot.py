@@ -12,15 +12,19 @@ class TradingBot:
     def __init__(self, parameters, data):
         self.P = parameters
         self.data = data
-        self.obv_window = 30;
+        self.obv_window = 30
+        self.current_buy = 0
+        self.prev_buy = 0
+        self.current_sell = 0
+        self.prev_sell = 0
     
     # Buy trigger function
     def buy_trigger(self, t, P):
-        return self.buy(t, P) and not self.buy(t-1, P) and not (self.sell(t, P) and not self.sell(t-1, P))
+        return self.buy(t, P) and not self.prev_buy and not (self.sell(t, P) and not self.prev_sell)
 
     # Sell trigger function
     def sell_trigger(self, t, P):
-        return self.sell(t, P) and not self.sell(t-1, P) and not (self.buy(t, P) and not self.buy(t-1, P))
+        return self.sell(t, P) and not self.prev_sell and not (self.buy(t, P) and not self.prev_buy)
 
     # Buy function
     def buy(self, t, P):
@@ -48,6 +52,7 @@ class TradingBot:
                 dnf = dnf or lit 
             else:                   # it is an AND conditional
                 dnf = dnf and lit
+        self.current_buy = dnf
         return dnf
     
     # Sell function
@@ -76,6 +81,7 @@ class TradingBot:
                 dnf = dnf or lit 
             else:                   # it is an AND conditional
                 dnf = dnf and lit
+        self.current_sell = dnf
         return dnf
 
     # MACD indicator
@@ -182,6 +188,8 @@ class TradingBot:
             if t == len(self.data)-1 and BTC > 0:
                 AUD = BTC * 0.98 * self.data['close'][t]
                 BTC = 0.0
+            self.prev_buy = self.current_buy
+            self.prev_sell = self.current_sell
         return AUD
     
     
