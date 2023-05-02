@@ -49,7 +49,7 @@ class GeneticAlgorithm:
             P = self.getIndicatorCombination()
             bot = TradingBot(P, self.data)  # Returns finalAUD
             botInstance = [bot.run(), P]
-            population.append(botInstance) 
+            population.append(botInstance)
 
         # Run the genetic algorithm for number of generations
         for g in range(self.num_generations):
@@ -71,11 +71,12 @@ class GeneticAlgorithm:
             # print(population)
             
         # Evaluate the fitness of the final population
-        fitness_scores = self.evaluate_fitness(population)
-        
-        # Return the best performing bot in the final population
-        best_bot_index = fitness_scores.index(max(fitness_scores))
-        best_bot = population[best_bot_index]
+            fitness_scores = self.evaluate_fitness(population)
+            
+            # Return the best performing bot in the final population
+            best_bot_index = fitness_scores.index(max(fitness_scores))
+            best_bot = population[best_bot_index]
+            print(best_bot)
         return best_bot
     
     # Returns 1 or 0
@@ -147,12 +148,12 @@ class GeneticAlgorithm:
     def select_parents(self, population, fitness_scores):
         elite_indices = sorted(range(len(fitness_scores)), key=lambda i: fitness_scores[i], reverse=True)[:self.population_size // 2]
         elite_bots = [population[i] for i in elite_indices]
+        print(elite_bots)
         return elite_bots
     
     # Create offspring by applying through genetic operators crossover and mutation
     def reproduce(self, parents):
         offspring = parents.copy()
-        # TODO: fix mutation and crossover to fit the parameters
         while len(offspring) < self.population_size:
             parent1 = random.choice(parents)
             parent2 = random.choice(parents)
