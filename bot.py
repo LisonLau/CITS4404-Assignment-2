@@ -39,10 +39,10 @@ class TradingBot:
                 lit = a[0] > self.data.loc[t, 'close'] and a[2] < self.data.loc[t-1, 'close']
             elif (P[i][0] == "rsi"):
                 a = self.rsi_indicator(t)
-                lit = a.item() < RSI_OVERSOLD
+                lit = a.item() < P[i][3]
             elif (P[i][0] == "sma"):
                 a = self.sma_indicator(t)
-                lit = a[0] > self.data.loc[t, 'close'] and a[1] <= self.data.loc[t-1, 'close']
+                lit = a[0] > a[1] and a[2] < a[3]
             elif (P[i][0] == "obv" and t >= 30):
                 a = self.obv_indicator(t)
                 lit = a[0] < a[1] and self.data.loc[t-30, 'close'] > self.data.loc[t, 'close']
@@ -67,10 +67,10 @@ class TradingBot:
                 lit = a[0] < a[1] and a[2] > a[3] and a[0] < 0
             elif (P[i][0] == "rsi"):
                 a = self.rsi_indicator(t)
-                lit = a.item() > RSI_OVERBOUGHT   
+                lit = a.item() > P[i][4]
             elif (P[i][0] == "sma"):
                 a = self.sma_indicator(t)
-                lit = a[0] < self.data.loc[t, 'close'] and a[1] >= self.data.loc[t-1, 'close']
+                lit = a[0] < a[1] and a[2] > a[3] 
             elif (P[i][0] == "bb"):
                 a = self.bb_indicator(t)
                 lit = a[1] < self.data.loc[t, 'close'] and a[3] > self.data.loc[t-1, 'close']
@@ -119,12 +119,15 @@ class TradingBot:
         return [lower_band, upper_band, prev_lower, prev_upper]
 
     def sma_indicator(self, t):
-        current = self.data.loc[t, 'sma']
+        current_low = self.data.loc[t, 'sma_low']
+        current_upp = self.data.loc[t, 'sma_upp']
         if t-1 > 0:
-            previous = self.data.loc[t-1, 'sma']
+            prev_low = self.data.loc[t-1, 'sma_low']
+            prev_upp = self.data.loc[t-1, 'sma_upp']
         else:
-            previous = self.data.loc[0, 'sma']
-        return [current, previous]
+            prev_low = self.data.loc[0, 'sma_low']
+            prev_upp = self.data.loc[0, 'sma_upp']
+        return [current_low, current_upp, prev_low, prev_upp]
     
     def obv_indicator(self, t):
         cur_vol = self.data.loc[t, 'obv']
@@ -164,8 +167,10 @@ class TradingBot:
                 self.data.loc[:,'bb_lower'] = bb_indicator.bollinger_lband()
                 self.data.loc[:,'bb_upper'] = bb_indicator.bollinger_hband()
             elif type == "sma":
-                sma_indicator = ta.trend.SMAIndicator(close=prices, window=p[2])
-                self.data.loc[:,'sma'] = sma_indicator.sma_indicator()
+                sma_indicator_lower = ta.trend.SMAIndicator(close=prices, window=p[2])
+                self.data.loc[:,'sma_low'] = sma_indicator_lower.sma_indicator()
+                sma_indicator_upper = ta.trend.SMAIndicator(close=prices, window=p[3])
+                self.data.loc[:,'sma_upp'] = sma_indicator_upper.sma_indicator()
             elif type == "obv":
                 obv_indicator = ta.volume.OnBalanceVolumeIndicator(close=prices, volume=volumes)
                 self.data.loc[:,'obv'] = obv_indicator.on_balance_volume()

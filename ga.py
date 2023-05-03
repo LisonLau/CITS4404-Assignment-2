@@ -23,7 +23,9 @@ class GeneticAlgorithm:
         
         # Define the range of parameter values for the RSI indicator
         self.RSI_RANGES = {
-            'window': range(10, 25)
+            'window': range(10, 25),
+            'oversold': range(20, 55, 5),
+            'overbought': range(50, 105, 5)
         }
         
         # Define the range of parameter values for the BB indicator
@@ -34,7 +36,8 @@ class GeneticAlgorithm:
         
         # Define the range of parameter values for the SMA indicator
         self.SMA_RANGES = {
-            'window': range(20, 200, 10)
+            'window_low': range(20, 150, 10),
+            'window_upp': range(150, 250, 10)
         }
         
         # Define the range of parameter values for the OBV indicator 
@@ -107,8 +110,9 @@ class GeneticAlgorithm:
             macd = [header.TREND[numTrend], self.one_or_zero(), w_slow, w_fast, w_sign]
             return macd
         elif numTrend == 2:
-            window = random.choice(self.SMA_RANGES['window'])
-            sma = [header.TREND[numTrend], self.one_or_zero(), window]
+            window_low = random.choice(self.SMA_RANGES['window_low'])
+            window_upp = random.choice(self.SMA_RANGES['window_upp'])
+            sma = [header.TREND[numTrend], self.one_or_zero(), window_low, window_upp]
             return sma
             
     # MOMENTUM INDICATORS
@@ -118,7 +122,9 @@ class GeneticAlgorithm:
             return [header.MOMENTUM[numMomentum]]
         elif numMomentum == 1:
             window = random.choice(self.RSI_RANGES['window'])
-            rsi = [header.MOMENTUM[numMomentum], self.one_or_zero(), window]
+            ovsold = random.choice(self.RSI_RANGES['oversold'])
+            ovbought = random.choice(self.RSI_RANGES['overbought'])
+            rsi = [header.MOMENTUM[numMomentum], self.one_or_zero(), window, ovsold, ovbought]
             return rsi
         
     # VOLUME INDICATORS
@@ -206,12 +212,18 @@ class GeneticAlgorithm:
                 if random.random() < self.mutation_rate:
                     mutated_bot[1][i][1] = not mutated_bot[1][i][1]
                 if random.random() < self.mutation_rate:
-                    mutated_bot[1][i][2] = random.choice(self.SMA_RANGES['window'])
+                    mutated_bot[1][i][2] = random.choice(self.SMA_RANGES['window_low'])
+                if random.random() < self.mutation_rate:
+                    mutated_bot[1][i][3] = random.choice(self.SMA_RANGES['window_upp'])
             elif mutated_bot[1][i][0] == "rsi":
                 if random.random() < self.mutation_rate:
                     mutated_bot[1][i][1] = not mutated_bot[1][i][1]
                 if random.random() < self.mutation_rate:
                     mutated_bot[1][i][2] = random.choice(self.RSI_RANGES['window'])
+                if random.random() < self.mutation_rate:
+                    mutated_bot[1][i][3] = random.choice(self.RSI_RANGES['overbought'])
+                if random.random() < self.mutation_rate:
+                    mutated_bot[1][i][4] = random.choice(self.RSI_RANGES['oversold'])
             elif mutated_bot[1][i][0] == "obv":
                 if random.random() < self.mutation_rate:
                     mutated_bot[1][i][1] = not mutated_bot[1][i][1]

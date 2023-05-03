@@ -1,8 +1,8 @@
 # Indicator parameter formats
 # MACD  = ["macd", 1, 26, 12, 9]
-# RSI   = ["rsi", 1, 14]
+# RSI   = ["rsi", 1, 14, 30, 70]
 # BB    = ["bb", 1, 20, 2]
-# SMA   = ["sma", 1, 20]
+# SMA   = ["sma", 1, 50, 200]
 # OBV   = ["obv", 1, 30]
 
 TREND = {
