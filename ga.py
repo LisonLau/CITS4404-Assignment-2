@@ -70,13 +70,12 @@ class GeneticAlgorithm:
             # Replace the old population with the new one
             population = offspring
             
-            # Evaluate the fitness of the final population
-            fitness_scores = self.evaluate_fitness(population)
-            
-            # Return the best performing bot in the final population
-            best_bot_index = fitness_scores.index(max(fitness_scores))
-            best_bot = population[best_bot_index]
-            print(best_bot)
+        # Evaluate the fitness of the final population
+        fitness_scores = self.evaluate_fitness(population)
+        
+        # Return the best performing bot in the final population
+        best_bot_index = fitness_scores.index(max(fitness_scores))
+        best_bot = population[best_bot_index]
             
         return best_bot
     

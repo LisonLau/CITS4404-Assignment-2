@@ -23,14 +23,29 @@ if __name__ == '__main__':
     NUM_GENERATIONS = 50
     MUTATION_RATE   = 0.3
     CROSSOVER_RATE  = 0.5
+    
+    # Get the training data and testing data
     DATA = getOHLCVdata()
-    TRAINING_DATA = DATA.loc[:539,:]
-    TEST_DATA = DATA.loc[540:,:]
-    ga = GeneticAlgorithm(POPULATION_SIZE, NUM_GENERATIONS, MUTATION_RATE, CROSSOVER_RATE, TRAINING_DATA)
+    TRAIN_DATA = DATA.loc[:539,:]
+    TEST_DATA  = DATA.loc[540:,:]
+    TRAIN = TRAIN_DATA.copy()
+    TEST  = TEST_DATA.copy().reset_index()
+    
+    # Run genetic algorithm to get the 'best bot' found
+    ga = GeneticAlgorithm(POPULATION_SIZE, NUM_GENERATIONS, MUTATION_RATE, CROSSOVER_RATE, TRAIN)
     best_bot = ga.run()
-    bot = TradingBot(best_bot[1], TEST_DATA)
-    print("Training data over 540 candles")
-    print(best_bot)
-    print("Running bot over 180 candles")
-    print(bot.run())
+    
+    # Create an instance of the 'best bot' found and run it with the test data
+    best_bot_instance = TradingBot(best_bot[1], TEST)
+    best_bot_finalAUD = best_bot_instance.run()
+    
+    # Print statements 
+    print("====================================================================================")
+    print("Training bot over 540 candles")
+    print("Best bot's final AUD holdings =", best_bot[0])
+    print("Best bot's parameters =", best_bot[1])
+    print("====================================================================================")
+    print("Testing bot over 180 candles")
+    print("Best bot's final AUD holdings =", best_bot_finalAUD)
+    print("====================================================================================")
 
