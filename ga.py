@@ -17,16 +17,16 @@ class GeneticAlgorithm:
         
         # Define the range of parameter values for the MACD indicator
         self.MACD_RANGES = {
-            'window_slow': range(26, 50),
-            'window_fast': range(12, 25),
+            'window_slow': range(26, 51),
+            'window_fast': range(12, 26),
             'window_sign': range(9, 15)
         }
         
         # Define the range of parameter values for the RSI indicator
         self.RSI_RANGES = {
             'window': range(10, 25),
-            'oversold': range(20, 55, 5),
-            'overbought': range(50, 105, 5)
+            'oversold': range(20, 50),
+            'overbought': range(50, 101)
         }
         
         # Define the range of parameter values for the BB indicator
@@ -37,13 +37,13 @@ class GeneticAlgorithm:
         
         # Define the range of parameter values for the SMA indicator
         self.SMA_RANGES = {
-            'window_low': range(20, 150, 10),
-            'window_upp': range(150, 250, 10)
+            'window_low': range(20, 150),
+            'window_upp': range(150, 250)
         }
         
         # Define the range of parameter values for the OBV indicator 
         self.OBV_RANGES = {
-            'window': range(10,100,10)
+            'window': range(10, 101)
         }
 
     def run(self): 
@@ -227,9 +227,9 @@ class GeneticAlgorithm:
                 if random.random() < self.mutation_rate:
                     mutated_bot[1][i][2] = random.choice(self.RSI_RANGES['window'])
                 if random.random() < self.mutation_rate:
-                    mutated_bot[1][i][3] = random.choice(self.RSI_RANGES['overbought'])
+                    mutated_bot[1][i][3] = random.choice(self.RSI_RANGES['oversold'])
                 if random.random() < self.mutation_rate:
-                    mutated_bot[1][i][4] = random.choice(self.RSI_RANGES['oversold'])
+                    mutated_bot[1][i][4] = random.choice(self.RSI_RANGES['overbought'])
             elif mutated_bot[1][i][0] == "obv":
                 if random.random() < self.mutation_rate:
                     mutated_bot[1][i][1] = not mutated_bot[1][i][1]
