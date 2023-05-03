@@ -3,6 +3,7 @@ import ccxt
 import header
 
 from ga import GeneticAlgorithm
+from bot import TradingBot
 
 # Retrieve OHLCV data
 def getOHLCVdata():
@@ -23,6 +24,13 @@ if __name__ == '__main__':
     MUTATION_RATE   = 0.3
     CROSSOVER_RATE  = 0.5
     DATA = getOHLCVdata()
-    ga = GeneticAlgorithm(POPULATION_SIZE, NUM_GENERATIONS, MUTATION_RATE, CROSSOVER_RATE, DATA)
-    print(ga.run())
+    TRAINING_DATA = DATA.loc[:539,:]
+    TEST_DATA = DATA.loc[540:,:]
+    ga = GeneticAlgorithm(POPULATION_SIZE, NUM_GENERATIONS, MUTATION_RATE, CROSSOVER_RATE, TRAINING_DATA)
+    best_bot = ga.run()
+    bot = TradingBot(best_bot[1], TEST_DATA)
+    print("Training data over 540 candles")
+    print(best_bot)
+    print("Running bot over 180 candles")
+    print(bot.run())
 
