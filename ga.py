@@ -1,5 +1,6 @@
 import random
 import header
+import numpy as np
 import copy
 
 from bot import TradingBot
@@ -73,13 +74,18 @@ class GeneticAlgorithm:
             # Replace the old population with the new one
             population = offspring
             
-        # Evaluate the fitness of the final population
-        fitness_scores = self.evaluate_fitness(population)
-        
-        # Return the best performing bot in the final population
-        best_bot_index = fitness_scores.index(max(fitness_scores))
-        best_bot = population[best_bot_index]
+            print(f"\n-~-~-~-~-~-~-~-~-~-~-~-~-~-Generation {g+1}-~-~-~-~-~-~-~-~-~-~-~-~-~-")
+            # Get average profit of all bots in the population
+            all_profits = np.array(fitness_scores)
+            mean_profit = np.mean(all_profits)
+            print(f"Average profit =", mean_profit)
             
+            # Get the best performing bot in the population
+            fitness_scores = self.evaluate_fitness(population)
+            best_bot_index = fitness_scores.index(max(fitness_scores))
+            best_bot = population[best_bot_index]  
+            print(f"Best bot found =", best_bot)
+        
         return best_bot
     
     # Returns 1 or 0
