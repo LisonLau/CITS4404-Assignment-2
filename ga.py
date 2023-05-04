@@ -218,7 +218,7 @@ class GeneticAlgorithm:
                 if random.random() < self.mutation_rate:
                     mutated_bot[1][i][3] = random.choice(self.MACD_RANGES['window_fast'])
                 if random.random() < self.mutation_rate:
-                    mutated_bot[1][i][2] = random.choice(self.MACD_RANGES['window_sign'])
+                    mutated_bot[1][i][4] = random.choice(self.MACD_RANGES['window_sign'])
             elif mutated_bot[1][i][0] == "sma":
                 if random.random() < self.mutation_rate:
                     mutated_bot[1][i][1] = not mutated_bot[1][i][1]

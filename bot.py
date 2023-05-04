@@ -226,8 +226,8 @@ class TradingBot:
 #     # Convert the timestamp to a datetime object
 #     data['timestamp'] = pd.to_datetime(data['timestamp'], unit='ms')
 #     return data
-    
+
 # data = getOHLCVdata()
-# a = TradingBot([["macd",True, 11,23,12],["rsi", True, 10, 30, 70], ['obv', False,60], ["bb", False, 21, 2]], TEST)
+# a = TradingBot([], data)
 # print(a.run())
 # a.plotAUD()
