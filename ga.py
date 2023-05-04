@@ -1,6 +1,7 @@
 import random
 import header
 import numpy as np
+import matplotlib.pyplot as plt
 import copy
 
 from bot import TradingBot
@@ -10,10 +11,12 @@ class GeneticAlgorithm:
     # Constructor for GeneticAlgorithm
     def __init__(self, population_size, num_generations, mutation_rate, crossover_rate, data):
         self.population_size = population_size
-        self.mutation_rate = mutation_rate
-        self.crossover_rate = crossover_rate
+        self.mutation_rate   = mutation_rate
+        self.crossover_rate  = crossover_rate
         self.num_generations = num_generations
         self.data = data
+        self.avg_fitness_scores  = []
+        self.best_fitness_scores = []
         
         # Define the range of parameter values for the MACD indicator
         self.MACD_RANGES = {
@@ -78,12 +81,14 @@ class GeneticAlgorithm:
             # Get average profit of all bots in the population
             all_profits = np.array(fitness_scores)
             mean_profit = np.mean(all_profits)
+            self.avg_fitness_scores.append(mean_profit)
             print(f"Average profit =", mean_profit)
             
             # Get the best performing bot in the population
             fitness_scores = self.evaluate_fitness(population)
             best_bot_index = fitness_scores.index(max(fitness_scores))
             best_bot = population[best_bot_index]  
+            self.best_fitness_scores.append(best_bot[0])
             print(f"Best bot found =", best_bot)
         
         return best_bot
@@ -259,3 +264,16 @@ class GeneticAlgorithm:
             volatility = self.getVolatility(1)
             return volatility
         
+    def plotAverageProfit(self):
+        plt.plot(range(self.num_generations), self.avg_fitness_scores)
+        plt.title('Average Fitness Score over Generations')
+        plt.xlabel('Generation')
+        plt.ylabel('Fitness Score (Profit)')
+        plt.show()
+        
+    def plotBestProfit(self):
+        plt.plot(range(self.num_generations), self.best_fitness_scores)
+        plt.title('Best Fitness Score over Generations')
+        plt.xlabel('Generation')
+        plt.ylabel('Fitness Score (Profit)')
+        plt.show()

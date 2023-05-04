@@ -19,8 +19,8 @@ def getOHLCVdata():
 
 if __name__ == '__main__':
     # Define genetic algorithm parameters
-    POPULATION_SIZE = 100
-    NUM_GENERATIONS = 30
+    POPULATION_SIZE = 50
+    NUM_GENERATIONS = 20
     MUTATION_RATE   = 0.3
     CROSSOVER_RATE  = 0.5
     
@@ -49,3 +49,7 @@ if __name__ == '__main__':
     print("Best bot's final AUD holdings =", best_bot_finalAUD)
     print("====================================================================================")
 
+    # Plot graphs
+    best_bot_instance.plotAUD()
+    ga.plotAverageProfit()
+    ga.plotBestProfit()

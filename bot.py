@@ -1,4 +1,7 @@
 import ta
+import matplotlib.pyplot as plt
+import pandas as pd
+import ccxt
 import header
 
 RSI_OVERBOUGHT = 70
@@ -15,6 +18,7 @@ class TradingBot:
         self.prev_buy = 0
         self.current_sell = 0
         self.prev_sell = 0
+        self.aud_holdings = []
     
     # Buy trigger function
     def buy_trigger(self, t, P):
@@ -196,4 +200,34 @@ class TradingBot:
                 BTC = 0.0
             self.prev_buy = self.current_buy
             self.prev_sell = self.current_sell
+            
+            # Store holdings over time for plotting
+            if AUD == 0:
+                self.aud_holdings.append(BTC * self.data.loc[t,'close'])
+            elif BTC == 0:
+                self.aud_holdings.append(AUD)
         return AUD
+
+    def plotAUD(self):
+        plt.plot(range(len(self.data)), self.aud_holdings)
+        plt.title("Best bot performance over 720 candles")
+        plt.xlabel('Time')
+        plt.ylabel('AUD holdings')
+        plt.show()
+        
+# Retrieve OHLCV data
+# def getOHLCVdata():
+#     # Initialize the Kraken exchange
+#     kraken = ccxt.kraken()
+#     # Retrieve the historical data for BTC/AUD from the Kraken exchange
+#     ohlcv = kraken.fetch_ohlcv('BTC/AUD', '1d')
+#     # Convert the data to a pandas DataFrame
+#     data = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+#     # Convert the timestamp to a datetime object
+#     data['timestamp'] = pd.to_datetime(data['timestamp'], unit='ms')
+#     return data
+    
+# data = getOHLCVdata()
+# a = TradingBot([["macd",True, 11,23,12],["rsi", True, 10, 30, 70], ['obv', False,60], ["bb", False, 21, 2]], TEST)
+# print(a.run())
+# a.plotAUD()
