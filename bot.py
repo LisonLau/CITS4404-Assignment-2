@@ -4,8 +4,6 @@ import pandas as pd
 import ccxt
 import header
 
-RSI_OVERBOUGHT = 70
-RSI_OVERSOLD = 30
 
 class TradingBot:
     
