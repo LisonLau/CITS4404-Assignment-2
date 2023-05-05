@@ -20,8 +20,8 @@ def getOHLCVdata():
 if __name__ == '__main__':
     # Define genetic algorithm parameters
     POPULATION_SIZE = 50
-    NUM_GENERATIONS = 20
-    MUTATION_RATE   = 0.3
+    NUM_GENERATIONS = 25
+    MUTATION_RATE   = 0.2
     CROSSOVER_RATE  = 0.5
     
     # Get the training data and testing data
