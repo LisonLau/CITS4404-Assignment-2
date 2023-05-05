@@ -271,9 +271,9 @@ class GeneticAlgorithm:
         plt.ylabel('Fitness Score (Profit)')
         plt.show()
         
-    def plotBestProfit(self):
+    def plotBestValue(self):
         plt.plot(range(self.num_generations), self.best_fitness_scores)
-        plt.title('Best Fitness Score over Generations')
+        plt.title('Best bot performance over Generations')
         plt.xlabel('Generation')
-        plt.ylabel('Fitness Score (Profit)')
+        plt.ylabel('AUD holdings')
         plt.show()

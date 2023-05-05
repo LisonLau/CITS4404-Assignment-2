@@ -208,7 +208,7 @@ class TradingBot:
 
     def plotAUD(self):
         plt.plot(range(len(self.data)), self.aud_holdings)
-        plt.title("Best bot performance over 720 candles")
+        plt.title("Best bot performance over last 180 candles")
         plt.xlabel('Time')
         plt.ylabel('AUD holdings')
         plt.show()
@@ -226,6 +226,6 @@ class TradingBot:
 #     return data
 
 # data = getOHLCVdata()
-# a = TradingBot([], data)
+# a = TradingBot([[''], ['rsi', False, 17, 38, 59], ['obv', 0, 31], ['bb', 0, 21, 2]], data)
 # print(a.run())
 # a.plotAUD()

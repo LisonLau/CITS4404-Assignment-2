@@ -50,6 +50,6 @@ if __name__ == '__main__':
     print("====================================================================================")
 
     # Plot graphs
-    best_bot_instance.plotAUD()
-    ga.plotAverageProfit()
-    ga.plotBestProfit()
+    # best_bot_instance.plotAUD()
+    # ga.plotAverageProfit()
+    ga.plotBestValue()
