@@ -50,5 +50,5 @@ The genetic algorithm parameters can be customized in the runner.py (lines 22-25
 
 * POPULATION_SIZE = 100
 * NUM_GENERATIONS = 30
-* MUTATION_RATE = 0.3
+* MUTATION_RATE = 0.1
 * CROSSOVER_RATE = 0.5
